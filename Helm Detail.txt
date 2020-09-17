@@ -1,0 +1,49 @@
+这将安装Tiller到你的运行Kubernetes集群。它还将设置所有必要的本地配置。
+
+这方面的一般命令包括：
+
+helm search：搜索chart
+helm fetch：下载一个chart到你的本地目录进行查看
+helm install：将chart上传到Kubernetes
+helm list：获取chart的发布列表
+环境变量：
+
+$HELM-HOME：为Helm文件设置一个可选位置。默认情况下，它们存储在~/.helm中
+$HELM-HOST：设置一个可选Tiller主机。格式为host:port
+$HELM-NO-PLUGINS：禁用插件。设置HELM-NO-PLUGINS=1将禁用插件。
+$TILLER-NAMESPACE：设置可靠的Tiller命名空间（默认为kube-system）
+$KUBECONFIG：设置一个可靠的Kubernetes配置文件（默认为~/.kube/config）
+$HELM-TLS-CA-CERT：用于验证Helm客户端和Helm服务端证书的TLS CA证书的路径（默认为$HELM-HOME/ca.pem）
+$HELM-TLS-CERT：对Tiller进行身份认证的TLS客户端证书文件的路径（默认为$HELM-HOME/cert.pem）
+$HELM-TLS-KEY：对Tiller进行身份认证的TLS客户端密钥文件的路径（默认为$HELM-HOME/key.pem）
+$HELM-TLS-ENABLE：在Helm和Tiller之间使用TLS连接（默认为false）
+$HELM-TLS-VERIFY：启用Helm和Tiller之间的TLS连接，并验证Tiller服务端证书（默认为false）
+$HELM-TLS-HOSTNAME：用于验证Tiller服务端证书的主机名或IP地址（默认为127.0.0.1）
+$HELM-KEY-PASSPHRASE：将HELM-KEY-PASSPHRASE设置为你的PGP私有密钥的密码。如果设置好了，你在签名Helm chart时将不会被提示输入密码。
+
+helm completion：为指定的shell（bash或zsh）生成自动完成脚本
+helm create：创建指定名称的新chart
+helm delete：从Kubernetes中删除指定名称的发布
+helm dependency：管理Helm chart依赖
+helm fetch：从仓库下载chart并（可选地）将其解压到本地目录中
+helm get：下载指定名称的发布
+helm history：获取发布历史
+helm home：显示HELM-HOME的位置
+helm init：初始化helm的客户端和服务端
+helm inspect：检查chart
+helm install：安装chart
+helm lint：检查chart可能出现的问题
+helm list：获取发布列表
+helm package：将一个chart目录打包到一个chart归档文件中
+helm plugin：添加、删除或列出插件
+helm repo：添加、列出、更新、删除仓库或为仓库建立索引
+helm reset：从集群中卸载Tiller
+helm rollback：回滚发布至上一个修订
+helm search：用关键字搜索chart
+helm serve：启动一个本地web服务器
+helm status：显示指定名称的发布的状态
+helm template：在本地渲染模板
+helm test：测试发布
+helm upgrade：升级发布
+helm verify：验证指定路径上的chart是否已经签名并且有效
+helm version：打印客户端和服务端版本信息
