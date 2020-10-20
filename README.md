@@ -1,1 +1,18 @@
 # hehui
+
+
+<Path Stroke="Black" StrokeThickness="2">
+                    <Path.Data>
+                        <PathGeometry>
+                            <PathFigure IsClosed="True" StartPoint="20,0">
+                                <ArcSegment Point="0,20" Size="20,20"/>
+                                <LineSegment Point="0,40"/>
+                                <ArcSegment Point="20,60" Size="20,20"/>
+                                <LineSegment Point="158,60"/>
+                                <ArcSegment Point="178,40" Size="20,20"/>
+                                <LineSegment Point="178,20"/>
+                                <ArcSegment Point="158,0" Size="20,20"/>
+                            </PathFigure>
+                        </PathGeometry>
+                    </Path.Data>                    
+                </Path>
