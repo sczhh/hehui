@@ -1,47 +1,62 @@
-
-apiVersion: autoscaling/v2beta1
-kind: HorizontalPodAutoscaler
+apiVersion: extensions/v1beta1
+kind: Deployment
 metadata:
-  name: hpa-name
-  namespace: my-namespace
+  name: new-nginx
 spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment  # 基于Deployment进行扩缩
-    name: deployment-name  # Deployment名
-  minReplicas: 1   # 最大实例数
-  maxReplicas: 10   # 最小实例数
-  metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      targetAverageUtilization: 50  # CPU阈值设定50%
-  - type: Resource
-    resource:
-      name: memory
-      targetAverageValue: 200Mi  # 内存设定200M
-  - type: Pods
-    pods:
-      metricName: packets-per-second
-      targetAverageValue: 1k   # 每秒数据量
-  - type: Object
-    object:
-      metricName: requests-per-second
-      target:
-        apiVersion: extensions/v1beta1
-        kind: Ingress
-        name: main-route
-      targetValue: 10k   # 每秒请求量
-若需要指标生效，需要一定注明该pod的request cpu和memory，样例如下：
-
-containers:
-- image: nginx
-  imagePullPolicy: Always
-  name: default-mem-demo-ctr
-  resources:
-    requests:
-      memory: 256Mi
-      cpu: 2
-计算逻辑 参考 https://github.com/kubernetes/community/blob/master/contributors/design-proposals/autoscaling/horizontal-pod-autoscaler.md#autoscaling-algorithm
-
-TargetNumOfPods = ceil(sum(CurrentPodsCPUUtilization) / Target)
+  replicas: 1
+  selector:
+    matchLabels:
+      run: new-nginx
+  template:
+    metadata:
+      labels:
+        run: new-nginx
+    spec:
+      containers:
+      - image: registry.cn-hangzhou.aliyuncs.com/xianlu/new-nginx
+        imagePullPolicy: Always
+        name: new-nginx
+        ports:
+        - containerPort: 80
+          protocol: TCP
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: new-nginx
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    run: new-nginx
+  sessionAffinity: None
+  type: NodePort
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: gray-release
+  annotations:
+    # 请求头中满足正则匹配foo=bar的请求才会被路由到新版本服务new-nginx中
+    #nginx.ingress.kubernetes.io/service-match: | 
+    #  new-nginx: header("foo", /^bar$/)
+    nginx.ingress.kubernetes.io/service-weight: |
+        new-nginx: ${NEW_PER}, old-nginx: ${OLD_PER}
+spec:
+  rules:
+  - host: www.example.com
+    http:
+      paths:
+      # 老版本服务
+      - path: /
+        backend:
+          serviceName: old-nginx
+          servicePort: 80
+      # 新版本服务
+      - path: /
+        backend:
+          serviceName: new-nginx
+          servicePort: 80
