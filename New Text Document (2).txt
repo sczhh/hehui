@@ -1,32 +1,6 @@
-cat >/usr/lib/systemd/system/kubelet.service <<EOF
-[Unit]
-Description=kubelet: The Kubernetes Node Agent
-Documentation=https://kubernetes.io/docs/
-​
-[Service]
-ExecStart=/usr/bin/kubelet
-Restart=always
-StartLimitInterval=0
-RestartSec=10
-​
-[Install]
-WantedBy=multi-user.target
-EOF
-​
-#注意ExecStart内容换行
-mkdir -p /usr/lib/systemd/system/kubelet.service.d/
-cat >/usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf <<EOF
-[Service]
-Environment="KUBELET_KUBECONFIG_ARGS=--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf"
-Environment="KUBELET_CONFIG_ARGS=--config=/var/lib/kubelet/config.yaml"
-EnvironmentFile=-/var/lib/kubelet/kubeadm-flags.env
-EnvironmentFile=-/etc/sysconfig/kubelet
-ExecStart=
-ExecStart=/usr/bin/kubelet $KUBELET_KUBECONFIG_ARGS $KUBELET_CONFIG_ARGS $KUBELET_KUBEADM_ARGS $KUBELET_EXTRA_ARGS
-EOF
-​
-#导入cni-plugins
-mv cni /opt/
-​
-#启动kubelet
-systemctl enable kubelet && systemctl restart kubelet
+for i in `kubeadm config images list`; do   
+	imageName=${i#k8s.gcr.io/}  
+	docker pull registry.aliyuncs.com/google_containers/$imageName  	
+	docker tag registry.aliyuncs.com/google_containers/$imageName k8s.gcr.io/$imageName  
+	docker rmi registry.aliyuncs.com/google_containers/$imageName
+done;
